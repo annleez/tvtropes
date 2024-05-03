@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}StoryHelp Database Structure{% endblock %}
+
+{% block content %}
+<h1>StoryHelp Database Structure</h1>
+<span>All of the categories below are sourced from the TV Tropes website. This is not the entire structure of our
+    database, just the bones.</span>
+
+<h2>Genres</h2>
+<table border="1">
+    <tr>
+        <th>{{ 'NAME' }}</th>
+        <th>{{ 'IMPORTANT TAGS' }}</th>
+        <th>{{ 'CHARACTER TYPES' }}</th>
+    </tr>
+
+    {% for row in data["genres"] %}
+    <tr>
+        <td><a href="{{ row['LINK'] }}" class="tvtropes-link">{{ row['NAME'] }}</a></td>
+        <td>{{ row['IMPORTANT TAGS'] }}</td>
+        <td>{{ row['CHARACTER TYPES'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Characters</h2>
+<table border="1">
+    <tr>
+        <th>{{ 'NAME' }}</th>
+        <th>{{ 'TYPE' }}</th>
+        <th>{{ 'DESCRIPTION' }}</th>
+    </tr>
+
+    {% for row in data["characters"] %}
+    <tr>
+        <td><a href="{{ row['LINK'] }}" class="tvtropes-link">{{ row['NAME'] }}</a></td>
+        <td>{{ row['TYPE'] }}</td>
+        <td>{{ row['DESCRIPTION'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Topics</h2>
+<table border="1">
+    <tr>
+        <th>{{ 'NAME' }}</th>
+        <th>{{ 'RELEVANT GENRES' }}</th>
+        <th>{{ 'DESCRIPTION' }}</th>
+    </tr>
+
+    {% for row in data["topics"] %}
+    <tr>
+        <td><a href="{{ row['LINK'] }}" class="tvtropes-link">{{ row['NAME'] }}</a></td>
+        <td>{{ row['RELEVANT GENRES'] }}</td>
+        <td>{{ row['DESCRIPTION'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<h2>Suggestions</h2>
+<table border="1">
+    <tr>
+        <th>{{ 'NAME' }}</th>
+        <th>{{ 'TAG' }}</th>
+        <th>{{ 'RELEVANT TOPICS' }}</th>
+    </tr>
+
+    {% for row in data["narratives"] %}
+    <tr>
+        <td><a href="{{ row['LINK'] }}" class="tvtropes-link">{{ row['NAME'] }}</a></td>
+        <td>{{ row['TAG'] }}</td>
+        <td>{{ row['RELEVANT TOPICS'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

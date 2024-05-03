@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Home: Trope Suggestions{% endblock %}
+
+{% block content %}
+<h1>StoryHelp Suggestions</h1>
+<span>Select whatever characters, topics, and genres you would like your story to include, or leave any item marked as none. Once you have finished with your selections, press "Submit." Our program will output a tropey narrative suggestion!</span>
+
+<form action="/result" method="POST">
+    <label for="genre-dropdown">What genre(s) is your story?</label>
+    <select name="genre" class="dropdown-container" id="genre-dropdown">
+        {% for option in data["genres"] %}
+        <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" onclick="addDropdown('genre-dropdown')">Add Another Genre</button>
+
+    <label for="character-dropdown">Which characters are involved?</label>
+    <select name="character" class="dropdown-container" id="character-dropdown">
+        {% for option in data["characters"] %}
+        <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" onclick="addDropdown('character-dropdown')">Add Another Character</button>
+
+    <label for="topic-dropdown">Any particular topics at play?</label>
+    <select name="topic" class="dropdown-container" id="topic-dropdown">
+        {% for option in data["topics"] %}
+        <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </select>
+    <button type="button" onclick="addDropdown('topic-dropdown')">Add Another Topic</button>
+
+    <button type="submit" value="Submit">Submit</button>
+</form>
+
+<script>
+    function addDropdown(id) {
+        var originalElement = document.getElementById(id);
+        var clonedElement = originalElement.cloneNode(true);
+        originalElement.insertAdjacentElement('afterend', clonedElement);
+    }
+</script>
+{% endblock %}
