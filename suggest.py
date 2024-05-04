@@ -25,8 +25,6 @@ def make_suggestion(genres, characters, topics, all_data):
         if character['NAME'] != 'None' and character['NAME'] in character_names:
             input_characters.append(character)
             input_character_types.append(character['TYPE'].split('/'))
-    print("input characters:", input_characters)
-    print("input character types:", input_character_types)
     num_input_characters = len(input_characters)
 
     # PROCESS TOPIC INFO
@@ -35,7 +33,6 @@ def make_suggestion(genres, characters, topics, all_data):
     for topic in all_topics:
         if topic['NAME'] != 'None' and topic['NAME'] in topic_names:
             input_topics.append(topic['NAME'])
-    print("input topics:", input_topics)
 
     # PROCESS GENRE INFO
 
@@ -52,8 +49,7 @@ def make_suggestion(genres, characters, topics, all_data):
     narrative_scores = [0] * len(all_narratives)
     for i in range(len(all_narratives)):
         narrative = all_narratives[i]
-        # print("narrative:", narrative['NAME'])
-        total_weight = 100
+        total_weight = 100.
 
         min_characters = 0 if narrative['MIN CHARACTERS'] == "NA" else int(narrative['MIN CHARACTERS'])
         max_characters = 100 if narrative['MAX CHARACTERS'] == "NA" else int(narrative['MAX CHARACTERS'])
@@ -70,7 +66,7 @@ def make_suggestion(genres, characters, topics, all_data):
         character_score = 0
         narrative_characters = re.split('[/,]', narrative['CHARACTER TYPES'])
         if len(input_characters) != 0 and narrative_characters[0] != "NA":
-            weight = 50 / len(input_characters)
+            weight = 50. / len(input_characters)
             # note: type should be equally important for all character combos, regardless of their # of possible types
             total_weight -= 50
             match = False
@@ -91,7 +87,7 @@ def make_suggestion(genres, characters, topics, all_data):
                 if topic in narrative_topics:
                     topic_score += weight
             update(narrative_scores, i, topic_score)
-        
+
     print("narrative scores:", narrative_scores)
 
     # PICK BEST-FIT NARRATIVE
@@ -104,23 +100,21 @@ def make_suggestion(genres, characters, topics, all_data):
     top_narrative = all_narratives[random.choice(best_indices)] # pick randomly to break ties
     
     # CREATE DECISION EXPLANATION
+    max_score = min(max_score + 25, 100) # artifically inflate max score for more funsies
     explanation = f"We determined this trope to be a {max_score:.0f}% match based on your input."
 
-    print("top narrative:", top_narrative)
     # shuffle characters before picking character_0
     narrative_characters = top_narrative['CHARACTER TYPES'].split(',')
     if narrative_characters != 'NA':
         for i in range(len(narrative_characters)):
             narrative_characters[i] = narrative_characters[i].split('/')
-        print("narrative characters:", narrative_characters)
 
     # assign characters
     character_0_name = ""
     by_default = ""
     if "{CHARACTER_0}" in top_narrative['DESCRIPTION']:
         desired_types_0 = narrative_characters[0]
-        print("desired types for character 0:", desired_types_0)
-        weight = 1/len(desired_types_0)
+        weight = 1./len(desired_types_0)
         max_score = -1
         for i in range(len(input_character_types)):
             score = 0
@@ -132,6 +126,7 @@ def make_suggestion(genres, characters, topics, all_data):
                 character_0 = input_characters[i]
                 character_0_name = character_0['NAME']
                 index_0 = i
+                max_score = score
         if max_score == -1: # no good matches
             index_0 = random.randint(0, len(input_character_types) - 1)
             character_0 = input_characters[index_0]
@@ -140,14 +135,13 @@ def make_suggestion(genres, characters, topics, all_data):
                 by_default = ", by default,"
         input_characters.pop(index_0)
         input_character_types.pop(index_0)
-        print("character 0:", character_0)
     
     character_1_name = ""
     if "{CHARACTER_1}" in top_narrative['DESCRIPTION']:
         if len(narrative_characters) > 1:
             desired_types_1 = narrative_characters[1]
         # else same types as before, don't need to be distinct
-        weight = 1/len(desired_types_1)
+        weight = 1./len(desired_types_1)
         max_score = -1
         for i in range(len(input_character_types)):
             score = 0
@@ -159,6 +153,7 @@ def make_suggestion(genres, characters, topics, all_data):
                 character_1 = input_characters[i]
                 character_1_name = character_1['NAME']
                 index_1 = i
+                max_score = score
         if max_score == -1: # no good matches
             index_1 = random.randint(0, len(input_character_types) - 1)
             character_1 = input_characters[index_1]
@@ -200,8 +195,9 @@ def make_suggestion(genres, characters, topics, all_data):
             elif top_narrative['MAX CHARACTERS'] != top_narrative['MIN CHARACTERS']:
                 comparison += f" to {top_narrative['MAX CHARACTERS']}"
     
-    first_s = "" if max_characters == 1 else "s"
-    second_s = "s" if num_input_characters > 1 else ""
+    max_characters = top_narrative['MAX CHARACTERS']
+    first_s = "" if max_characters == '1' else "s"
+    second_s = "" if num_input_characters == 1 else "s"
     explanation += f" The '{top_narrative['NAME']}' trope involves {comparison} character{first_s}, and you gave us {num_input_characters} character{second_s}, which works out."
 
     if character_0_name:
@@ -215,7 +211,6 @@ def make_suggestion(genres, characters, topics, all_data):
     for topic in narrative_topics:
         if topic in input_topics:
             overlap_topics.append(topic)
-    print("overlap_topics:", overlap_topics)
     if len(overlap_topics) > 0:
         explanation += f" This trope suggestion is topically similar to your input: they both involve "
         if len(overlap_topics) == 1:
@@ -239,7 +234,7 @@ def make_suggestion(genres, characters, topics, all_data):
         if narrative_tag in input_tags:
             genres_with_tag_overlap.append(genre)
     if len(genres_with_tag_overlap) > 0:
-        first_s = "s" if len(genres_with_tag_overlap) > 1 else ""
+        first_s = "" if len(genres_with_tag_overlap) == 1 else "s"
         explanation += f" Tropes about {narrative_tag} are important in the genre{first_s} that you selected: "
         if len(genres_with_tag_overlap) == 1:
             explanation += f"{genres_with_tag_overlap[0]['NAME']}."
@@ -255,19 +250,14 @@ def make_suggestion(genres, characters, topics, all_data):
     # genre explanation for topics
     topics_with_genre_overlap = defaultdict(list)
     for topic in all_topics:
-        print("narrative topics:", narrative_topics)
         if topic['NAME'] in narrative_topics:
             narrative_topic_genres = topic['RELEVANT GENRES'].split('/')
-            print("narrative topic genres:", narrative_topic_genres)
-            print("input genres:", input_genres)
             for narrative_genre in narrative_topic_genres:
                 if narrative_genre in input_genre_names:
                     topics_with_genre_overlap[narrative_genre].append(topic['NAME'])
-
-    print("topics with genre overlap:", topics_with_genre_overlap)
     
     for genre, topic_list in topics_with_genre_overlap.items():
-        explanation += f" The genre of {genre} especially concerns topics such as "
+        explanation += f" The {genre} genre especially concerns topics such as "
         if len(topic_list) == 1:
             explanation += f"{topic_list[0]}."
         else:
@@ -278,7 +268,6 @@ def make_suggestion(genres, characters, topics, all_data):
                     explanation += f"{topic_list[i]} "
                 else:
                     explanation += f"{topic_list[i]}, "
-        print("explanation:", explanation)
 
 
     return suggestion, description, explanation
