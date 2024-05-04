@@ -50,8 +50,11 @@ def result():
         genres = request.form.getlist('genre')
         characters = request.form.getlist('character')
         topics = request.form.getlist('topic')
-        suggestion = make_suggestion(genres, characters, topics, all_data)
-    return render_template('result.html', suggestion=suggestion)
+        suggestion, description, explanation = make_suggestion(genres, characters, topics, all_data)
+        for narrative in all_data['narratives']:
+            if narrative['NAME'] == suggestion:
+                link = narrative['LINK']
+    return render_template('result.html', suggestion=suggestion, description=description, explanation=explanation, link=link)
     
 
 if __name__ == '__main__':

@@ -1,1 +1,14 @@
 {% extends "base.html" %}
+
+{% block title %}Your Results{% endblock %}
+
+{% block content %}
+<div class="centered">
+<h1>Your Results</h1>
+<span>The trope that you should try out is...</span>
+
+<h2><a href="{{ link }}" class="tvtropes-link"">{{ suggestion }}</a></h2>
+<p class="tvtropes-quote">{{ description }}</p>
+<p>{{ explanation }}</p>
+{% endblock %}
+</div>
