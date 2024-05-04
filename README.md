@@ -4,6 +4,6 @@ This program is a decision-making system which uses data from the TV Tropes webs
 
 **Instructions**
 
-You can access the deployed version of this project at [https://tvtropes.vercel.app/](https://https://tvtropes.vercel.app/).
+You can access the deployed version of this project at [tvtropes.vercel.app/](https://tvtropes.vercel.app/).
 
 To run the program locally, run 'python storyhelp.py' in the root directory.
