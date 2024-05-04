@@ -1,0 +1,5 @@
+flask
+Flask==2.2.3
+Jinja2==3.1.2
+requests==2.31.0
+Werkzeug==2.2.2

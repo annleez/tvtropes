@@ -1,3 +1,18 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }]
+  "builds": [
+    {
+      "src": "storyhelp.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxInstances": 1,
+        "pythonVersion": "3.10.8"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "storyhelp.py"
+    }
+  ]
 }
